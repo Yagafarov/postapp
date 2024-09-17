@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sensor_datas",
+  "info": {
+    "singularName": "sensor-data",
+    "pluralName": "sensor-datas",
+    "displayName": "sensorData",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "sensorId": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "value": {
+      "type": "string"
+    }
+  }
+}
