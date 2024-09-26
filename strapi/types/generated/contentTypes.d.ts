@@ -365,18 +365,33 @@ export interface AdminTransferTokenPermission extends Schema.CollectionType {
 export interface ApiSensorDataSensorData extends Schema.CollectionType {
   collectionName: 'sensor_datas';
   info: {
+<<<<<<< HEAD
     singularName: 'sensor-data';
     pluralName: 'sensor-datas';
     displayName: 'sensorData';
+=======
+    singularName: 'postlar';
+    pluralName: 'postlars';
+    displayName: 'sersor-data';
+>>>>>>> 8118d56 (pathni to'g'irladim)
     description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
+<<<<<<< HEAD
     sensorId: Attribute.String;
     type: Attribute.String;
     value: Attribute.String;
+=======
+    t1: Attribute.String;
+    t2: Attribute.String;
+    t3: Attribute.String;
+    t4: Attribute.String;
+    h1: Attribute.String;
+    h2: Attribute.String;
+>>>>>>> 8118d56 (pathni to'g'irladim)
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
