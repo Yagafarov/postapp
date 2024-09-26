@@ -1,35 +1,86 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
+import { auth } from './firebase';
+import Dashboard from './pages/Dashboard';
+import Login from './components/Auth/Login';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
+import NotFound from './pages/NotFound';
+import Header from '../src/components/Header/Header'
+import Sidebar from './components/Sidebar/Sidebar';
+import Statistics from './pages/Statistics';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [darkMode, setDarkMode] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', 'true');
+      } else {
+        setIsAuthenticated(false);
+        localStorage.setItem('isAuthenticated', 'false');
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup the subscription on unmount
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Routes>
+      <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+      <Route
+        path="*"
+        element={
+          <Layout
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+            toggleSidebar={toggleSidebar}
+            isSidebarOpen={isSidebarOpen}
+            isAuthenticated={isAuthenticated}
+          />
+        }
+      />
+    </Routes>
+  );
+};
 
-export default App
+const Layout = ({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen, isAuthenticated }) => {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <div className={`${darkMode ? 'dark' : ''} font-quickSand`}>
+      {!isLoginPage && <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} toggleSidebar={toggleSidebar} />}
+      {!isLoginPage && <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
+      <Routes>
+        <Route
+          path="/dashboard"
+          element={<ProtectedRoute element={<Dashboard darkMode={darkMode} />} isAuthenticated={isAuthenticated} />}
+        />
+
+        <Route
+          path="/statistics"
+          element={<ProtectedRoute element={<Statistics darkMode={darkMode} />} isAuthenticated={isAuthenticated} />}
+        />
+
+        <Route path="/" element={<ProtectedRoute element={<Dashboard darkMode={darkMode} />} isAuthenticated={isAuthenticated} />} />
+        <Route path="*" element={<ProtectedRoute element={<NotFound darkMode={darkMode} />} isAuthenticated={isAuthenticated} />} />
+      </Routes>
+    </div>
+  );
+};
+
+export default App;
