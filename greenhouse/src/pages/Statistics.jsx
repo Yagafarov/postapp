@@ -122,5 +122,4 @@ const getRandomColor = () => {
   }
   return color;
 };
-
 export default Statistics;
